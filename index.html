@@ -775,27 +775,44 @@ document.getElementById('img-modal').addEventListener('click', function(e) {
 
 // ========== 核心修复：合并window.onload，先替换图片路径，再初始化刮刮乐 ==========
 window.onload = function() {
-    // 第一步：自动替换LFS图片路径（关键！）
-    const lfsPrefix = "https://raw.githubusercontent.com/Jade-Chen-create/jade-chen/master/";
-    document.querySelectorAll('img').forEach(img => {
-        // 只处理本地images文件夹的图片，跳过视频封面（videos/）和外部链接
-        if (img.src.indexOf('http') === -1) {
-            if (img.src.indexOf('images/') !== -1) {
-                const imgName = img.src.split('images/')[1];
-                img.src = lfsPrefix + 'images/' + imgName;
-            } else if (img.src.indexOf('videos/') !== -1) {
-                // 视频封面也用Raw路径替换
-                const imgName = img.src.split('videos/')[1];
-                img.src = lfsPrefix + 'videos/' + imgName;
-            }
-        }
-    });
+    // 你的仓库Media基础地址（已填好，无需修改）
+  const baseUrl = "https://media.githubusercontent.com/media/Jade-Chen-create/jade-chen/refs/heads/master/";
 
-    // 第二步：初始化刮刮乐（原有逻辑保留）
+  // 自动替换所有图片路径（支持images/、videos/文件夹）
+  // 🌟 优化：加try/catch避免单张图片出错影响整体
+  try {
+    document.querySelectorAll('img').forEach(img => {
+      // 提取图片的相对路径（比如 images/cjy01.png）
+      let relativePath = img.getAttribute('src'); 
+      // 兼容：如果src为空/无效，跳过
+      if (!relativePath) return;
+      
+      // 兼容浏览器补全后的URL情况
+      if (relativePath.includes('http')) {
+        relativePath = relativePath.split('/').slice(-2).join('/');
+      }
+      // 只处理images/或videos/开头的路径
+      if (relativePath.startsWith('images/') || relativePath.startsWith('videos/')) {
+        img.src = baseUrl + relativePath;
+        console.log("✅ 替换图片路径：", img.src);
+      }
+    });
+    console.log("🎉 图片路径替换完成！");
+  } catch (err) {
+    console.error("⚠️ 部分图片替换失败：", err);
+  }
+
+    // 第二步：初始化刮刮乐（原有逻辑保留，加容错）
     const canvas = document.getElementById('scratchCanvas');
-    if (!canvas) return;
+    if (!canvas) {
+      console.log("ℹ️ 刮刮乐画布不存在，跳过初始化");
+      return;
+    }
 
     const container = canvas.parentElement;
+    // 🌟 优化：加容错，避免container为空
+    if (!container) return;
+    
     canvas.width = container.offsetWidth;
     canvas.height = container.offsetHeight;
     const ctx = canvas.getContext('2d');
