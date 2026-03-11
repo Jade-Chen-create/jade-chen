@@ -647,160 +647,171 @@
 
     <script>
         // 1. 切换核心Tab（第一层）
-        function switchTab(tabId) {
-            // 隐藏所有Tab内容
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            // 移除所有导航激活状态
-            document.querySelectorAll('.nav-item').forEach(nav => {
-                nav.classList.remove('active');
-            });
-            // 激活当前Tab
-            document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
-            // 隐藏所有项目详情，显示项目列表
-            document.querySelectorAll('.project-detail').forEach(detail => {
-                detail.style.display = 'none';
-            });
-            document.querySelectorAll('.project-list').forEach(list => {
-                list.style.display = 'block';
-            });
-            // 回到顶部
-            window.scrollTo(0, 0);
-        }
+function switchTab(tabId) {
+    // 隐藏所有Tab内容
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    // 移除所有导航激活状态
+    document.querySelectorAll('.nav-item').forEach(nav => {
+        nav.classList.remove('active');
+    });
+    // 激活当前Tab
+    document.getElementById(tabId).classList.add('active');
+    event.target.classList.add('active');
+    // 隐藏所有项目详情，显示项目列表
+    document.querySelectorAll('.project-detail').forEach(detail => {
+        detail.style.display = 'none';
+    });
+    document.querySelectorAll('.project-list').forEach(list => {
+        list.style.display = 'block';
+    });
+    // 回到顶部
+    window.scrollTo(0, 0);
+}
 
-        // 2. 显示视觉/策划类项目详情（第二层→第三层）
-        function showProjectDetail(tabType, projectId) {
-            // 隐藏当前Tab的项目列表，显示对应项目详情
-            document.getElementById(`${tabType}-project-list`).style.display = 'none';
-            const detailId = `${projectId}-detail`;
-            document.getElementById(detailId).style.display = 'block';
-            // 回到顶部
-            window.scrollTo(0, 0);
-        }
+// 2. 显示视觉/策划类项目详情（第二层→第三层）
+function showProjectDetail(tabType, projectId) {
+    // 隐藏当前Tab的项目列表，显示对应项目详情
+    document.getElementById(`${tabType}-project-list`).style.display = 'none';
+    const detailId = `${projectId}-detail`;
+    document.getElementById(detailId).style.display = 'block';
+    // 回到顶部
+    window.scrollTo(0, 0);
+}
 
-        // 3. 返回视觉/策划类项目列表（第三层→第二层）
-        function backToProjectList(tabType) {
-            document.querySelectorAll('.project-detail').forEach(detail => {
-                detail.style.display = 'none';
-            });
-            document.getElementById(`${tabType}-project-list`).style.display = 'block';
-            window.scrollTo(0, 0);
-        }
+// 3. 返回视觉/策划类项目列表（第三层→第二层）
+function backToProjectList(tabType) {
+    document.querySelectorAll('.project-detail').forEach(detail => {
+        detail.style.display = 'none';
+    });
+    document.getElementById(`${tabType}-project-list`).style.display = 'block';
+    window.scrollTo(0, 0);
+}
 
-        // 4. 下一个视觉/策划类项目切换
-        function showNextProject(tabType, currentProjectId) {
-            // 视觉设计项目顺序：jufu → qiaocuo → ocean-festival → aigc-op → jufu
-            const visualProjects = ['jufu', 'qiaocuo', 'ocean-festival', 'aigc-op'];
-            // 策划设计项目顺序：ocean-festival-plan → qiaocuo-plan → minhou-rural → ocean-festival-plan
-            const planProjects = ['ocean-festival-plan', 'qiaocuo-plan', 'minhou-rural'];
-            
-            let projects = [];
-            if (tabType === 'visual') projects = visualProjects;
-            if (tabType === 'plan') projects = planProjects;
-            
-            // 找到当前项目索引，计算下一个项目索引
-            const currentIndex = projects.indexOf(currentProjectId);
-            const nextIndex = (currentIndex + 1) % projects.length;
-            const nextProjectId = projects[nextIndex];
-            
-            // 隐藏当前详情，显示下一个详情
-            document.getElementById(`${currentProjectId}-detail`).style.display = 'none';
-            document.getElementById(`${nextProjectId}-detail`).style.display = 'block';
-            window.scrollTo(0, 0);
-        }
-
-        // 5. AIGC视频模块专属函数（修复后）
-        // 显示视频详情
-        function showVideoDetail(type) {
-            document.getElementById('video-project-list').style.display = 'none';
-            document.getElementById(`${type}-detail`).style.display = 'block';
-            window.scrollTo(0, 0);
-        }
-        // 返回视频列表
-        function backToVideoList() {
-            document.getElementById('ocean-detail').style.display = 'none';
-            document.getElementById('mac-detail').style.display = 'none';
-            document.getElementById('video-project-list').style.display = 'grid';
-            window.scrollTo(0, 0);
-        }
-        // 视频切换
-        function switchToNextVideo(currentType) {
-            const videoTypes = ['ocean', 'mac'];
-            const currentIndex = videoTypes.indexOf(currentType);
-            const nextIndex = (currentIndex + 1) % videoTypes.length;
-            const nextType = videoTypes[nextIndex];
-            
-            document.getElementById(`${currentType}-detail`).style.display = 'none';
-            document.getElementById(`${nextType}-detail`).style.display = 'block';
-            window.scrollTo(0, 0);
-        }
-
-        // 6. 图片放大弹窗
-        function openImgModal(imgSrc) {
-            document.getElementById('modal-img').src = imgSrc;
-            document.getElementById('img-modal').style.display = 'flex';
-        }
-        function closeImgModal() {
-            document.getElementById('img-modal').style.display = 'none';
-        }
-
-        // 7. 复制邮箱
-        function copyEmail() {
-            const email = document.getElementById('email').innerText;
-            navigator.clipboard.writeText(email).then(() => {
-                alert('邮箱复制成功！');
-            });
-        }
-
-        // 8. 提交留言
-        function submitMessage(event) {
-            event.preventDefault();
-            document.getElementById('message-tips').style.display = 'block';
-            // 清空表单
-            document.getElementById('name').value = '';
-            document.getElementById('contact-way').value = '';
-            document.getElementById('message').value = '';
-            // 3秒后隐藏提示
-            setTimeout(() => {
-                document.getElementById('message-tips').style.display = 'none';
-            }, 3000);
-        }
-
-        // 点击弹窗外区域关闭弹窗
-        document.getElementById('img-modal').addEventListener('click', function(e) {
-            if (e.target === this) closeImgModal();
-        });
-        // ========== 新增：刮刮乐交互逻辑 ==========
-window.onload = function() {
-    // 获取画布和上下文
-    const canvas = document.getElementById('scratchCanvas');
-    if (!canvas) return; // 没有画布则不执行
+// 4. 下一个视觉/策划类项目切换
+function showNextProject(tabType, currentProjectId) {
+    // 视觉设计项目顺序：jufu → qiaocuo → ocean-festival → aigc-op → jufu
+    const visualProjects = ['jufu', 'qiaocuo', 'ocean-festival', 'aigc-op'];
+    // 策划设计项目顺序：ocean-festival-plan → qiaocuo-plan → minhou-rural → ocean-festival-plan
+    const planProjects = ['ocean-festival-plan', 'qiaocuo-plan', 'minhou-rural'];
     
-    // 适配画布尺寸（关键：和容器大小一致）
+    let projects = [];
+    if (tabType === 'visual') projects = visualProjects;
+    if (tabType === 'plan') projects = planProjects;
+    
+    // 找到当前项目索引，计算下一个项目索引
+    const currentIndex = projects.indexOf(currentProjectId);
+    const nextIndex = (currentIndex + 1) % projects.length;
+    const nextProjectId = projects[nextIndex];
+    
+    // 隐藏当前详情，显示下一个详情
+    document.getElementById(`${currentProjectId}-detail`).style.display = 'none';
+    document.getElementById(`${nextProjectId}-detail`).style.display = 'block';
+    window.scrollTo(0, 0);
+}
+
+// 5. AIGC视频模块专属函数（修复后）
+// 显示视频详情
+function showVideoDetail(type) {
+    document.getElementById('video-project-list').style.display = 'none';
+    document.getElementById(`${type}-detail`).style.display = 'block';
+    window.scrollTo(0, 0);
+}
+// 返回视频列表
+function backToVideoList() {
+    document.getElementById('ocean-detail').style.display = 'none';
+    document.getElementById('mac-detail').style.display = 'none';
+    document.getElementById('video-project-list').style.display = 'grid';
+    window.scrollTo(0, 0);
+}
+// 视频切换
+function switchToNextVideo(currentType) {
+    const videoTypes = ['ocean', 'mac'];
+    const currentIndex = videoTypes.indexOf(currentType);
+    const nextIndex = (currentIndex + 1) % videoTypes.length;
+    const nextType = videoTypes[nextIndex];
+    
+    document.getElementById(`${currentType}-detail`).style.display = 'none';
+    document.getElementById(`${nextType}-detail`).style.display = 'block';
+    window.scrollTo(0, 0);
+}
+
+// 6. 图片放大弹窗
+function openImgModal(imgSrc) {
+    document.getElementById('modal-img').src = imgSrc;
+    document.getElementById('img-modal').style.display = 'flex';
+}
+function closeImgModal() {
+    document.getElementById('img-modal').style.display = 'none';
+}
+
+// 7. 复制邮箱
+function copyEmail() {
+    const email = document.getElementById('email').innerText;
+    navigator.clipboard.writeText(email).then(() => {
+        alert('邮箱复制成功！');
+    });
+}
+
+// 8. 提交留言
+function submitMessage(event) {
+    event.preventDefault();
+    document.getElementById('message-tips').style.display = 'block';
+    // 清空表单
+    document.getElementById('name').value = '';
+    document.getElementById('contact-way').value = '';
+    document.getElementById('message').value = '';
+    // 3秒后隐藏提示
+    setTimeout(() => {
+        document.getElementById('message-tips').style.display = 'none';
+    }, 3000);
+}
+
+// 点击弹窗外区域关闭弹窗
+document.getElementById('img-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeImgModal();
+});
+
+// ========== 核心修复：合并window.onload，先替换图片路径，再初始化刮刮乐 ==========
+window.onload = function() {
+    // 第一步：自动替换LFS图片路径（关键！）
+    const lfsPrefix = "https://raw.githubusercontent.com/Jade-Chen-create/jade-chen/master/";
+    document.querySelectorAll('img').forEach(img => {
+        // 只处理本地images文件夹的图片，跳过视频封面（videos/）和外部链接
+        if (img.src.indexOf('http') === -1) {
+            if (img.src.indexOf('images/') !== -1) {
+                const imgName = img.src.split('images/')[1];
+                img.src = lfsPrefix + 'images/' + imgName;
+            } else if (img.src.indexOf('videos/') !== -1) {
+                // 视频封面也用Raw路径替换
+                const imgName = img.src.split('videos/')[1];
+                img.src = lfsPrefix + 'videos/' + imgName;
+            }
+        }
+    });
+
+    // 第二步：初始化刮刮乐（原有逻辑保留）
+    const canvas = document.getElementById('scratchCanvas');
+    if (!canvas) return;
+
     const container = canvas.parentElement;
     canvas.width = container.offsetWidth;
     canvas.height = container.offsetHeight;
     const ctx = canvas.getContext('2d');
-    
-    // 绘制遮罩层（浅灰色，和你的极简风格匹配）
+
     ctx.fillStyle = '#E8E8E8';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // 刮刮乐核心变量
+
     let isScratching = false;
-    const brushSize = 40; // 刮擦笔触大小
-    
-    // 鼠标/触摸事件统一处理
+    const brushSize = 40;
+
     function startScratch(e) {
         isScratching = true;
-        scratch(e); // 点击时直接刮一下
+        scratch(e);
     }
     function scratch(e) {
         if (!isScratching) return;
-        
-        // 获取鼠标/触摸位置（适配移动端）
         let x, y;
         if (e.type.includes('touch')) {
             x = e.touches[0].clientX - canvas.getBoundingClientRect().left;
@@ -809,8 +820,6 @@ window.onload = function() {
             x = e.clientX - canvas.getBoundingClientRect().left;
             y = e.clientY - canvas.getBoundingClientRect().top;
         }
-        
-        // 绘制透明笔触（刮开效果）
         ctx.globalCompositeOperation = 'destination-out';
         ctx.beginPath();
         ctx.arc(x, y, brushSize, 0, Math.PI * 2);
@@ -819,16 +828,14 @@ window.onload = function() {
     function endScratch() {
         isScratching = false;
     }
-    
-    // 绑定鼠标事件
+
     canvas.addEventListener('mousedown', startScratch);
     canvas.addEventListener('mousemove', scratch);
     canvas.addEventListener('mouseup', endScratch);
     canvas.addEventListener('mouseleave', endScratch);
-    
-    // 绑定触摸事件（适配手机）
+
     canvas.addEventListener('touchstart', (e) => {
-        e.preventDefault(); // 阻止页面滚动
+        e.preventDefault();
         startScratch(e);
     });
     canvas.addEventListener('touchmove', (e) => {
@@ -836,8 +843,7 @@ window.onload = function() {
         scratch(e);
     });
     canvas.addEventListener('touchend', endScratch);
-    
-    // 可选：点击重置按钮（如果需要）
+
     window.resetScratch = function() {
         ctx.globalCompositeOperation = 'source-over';
         ctx.fillStyle = '#E8E8E8';
